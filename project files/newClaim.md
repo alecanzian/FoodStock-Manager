@@ -6,7 +6,7 @@ Both the people who shop and the people who need to be asked about "what’s mis
 
 ### L02 - What boundary, delay or alternative mechanism matters?
 - Alternatives: a paper list, a shared note, a group chat, or simply asking at home. Their weakness is that they depend on someone remembering to update them or to be asked.
-- Boundary: **TO DO**
+- Boundary: Ease of access to the app, be it platform dependency or internet access.
 - Delay: **TO DO**
 
 ### L03 - Who decides, bears cost or can block?
