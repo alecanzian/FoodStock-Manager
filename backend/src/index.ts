@@ -175,20 +175,25 @@ async function initDb() {
 
 // Shared stock logic. Returns the HTTP status and the JSON body to send.
 async function adjustStock(barcode: string, delta: number) {
-  const result = await pool.query(
+
+  var result = await pool.query("SELECT quantity FROM products WHERE barcode = $1", [barcode]);
+  // Check if the product exists
+  if (result.rowCount === 0) {
+    return { code: 404, body: { status: "error", message: "no product with that barcode" } };
+  }
+
+  // Check if the stock is sufficient for the adjustment
+  if (result.rows[0].quantity + delta < 0) {
+    return { code: 409, body: { status: "error", message: "not enough stock to remove that amount" } };
+  }
+
+  result = await pool.query(
     `UPDATE products
        SET quantity = quantity + $2
-     WHERE barcode = $1 AND quantity + $2 >= 0
+     WHERE barcode = $1
      RETURNING id, name, quantity, barcode`,
     [barcode, delta]
   );
 
-  if (result.rowCount === 0) {
-    const exists = await pool.query("SELECT 1 FROM products WHERE barcode = $1", [barcode]);
-    if (exists.rowCount === 0) {
-      return { code: 404, body: { status: "error", message: "no product with that barcode" } };
-    }
-    return { code: 409, body: { status: "error", message: "not enough stock to remove that amount" } };
-  }
   return { code: 200, body: result.rows[0] };
 }
